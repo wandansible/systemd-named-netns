@@ -1,0 +1,27 @@
+---
+
+- name: Configure netns default file
+  template:
+    src: netns_default
+    dest: "/etc/default/netns-{{ netns_item.name }}"
+
+- name: Create netns overlay config directory
+  file:
+    path: "/etc/netns/{{ netns_item.name }}/"
+    owner: root
+    group: root
+    mode: '0755'
+    state: directory
+
+- name: Configure netns overlay config file
+  template:
+    src: netns_overlay
+    dest: "/etc/netns/{{ netns_item.name }}/{{ item.filename }}"
+  with_items: "{{ netns_item.files }}"
+
+- name: Enable netns systemd unit
+  systemd:
+    name: "netns-{{ netns_item.type }}@{{ netns_item.name }}.service"
+    enabled: yes
+    masked: no
+  when: "'type' in netns_item"

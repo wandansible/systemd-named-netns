@@ -1,0 +1,23 @@
+---
+
+- name: Import WAND packaging GPG signing key
+  apt_key:
+    url: "https://bintray.com/user/downloadSubjectPublicKey?username=wand"
+    state: present
+
+- name: Add WAND apt repository
+  apt_repository:
+    repo: "deb https://dl.bintray.com/wand/general {{ansible_distribution_release}} main"
+    state: present
+
+- name: Install systemd-named-netns
+  apt:
+    pkg:
+      - systemd-named-netns
+    state: present
+
+- name: Configure netns
+  include_tasks: configure-netns.yml
+  with_items: "{{ netns }}"
+  loop_control:
+    loop_var: netns_item
