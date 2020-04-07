@@ -1,0 +1,17 @@
+---
+
+- name: Configure netns interface
+  template:
+    src: netns_default
+    dest: "/etc/default/netns-{{ netns_item.name }}/{{ item.type }}.{{ item.interface | default(veth_count) }}"
+
+- name: Enable netns systemd unit
+  systemd:
+    name: "netns-{{ item.type }}@{{ netns_item.name }}.service"
+    enabled: yes
+    masked: no
+
+# increment counter so next interface in this namespace gets a unique name
+- name: Increment virtual interface count
+  set_fact: veth_count={{ veth_count | int + 1 }}
+  when: "item.type == 'bridge' or item.type == 'veth'"

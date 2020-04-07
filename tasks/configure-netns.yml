@@ -1,9 +1,12 @@
 ---
 
-- name: Configure netns default file
-  template:
-    src: netns_default
-    dest: "/etc/default/netns-{{ netns_item.name }}"
+- name: Create netns interface config directory
+  file:
+    path: "/etc/default/netns-{{ netns_item.name }}/"
+    owner: root
+    group: root
+    mode: '0755'
+    state: directory
 
 - name: Create netns overlay config directory
   file:
@@ -13,15 +16,15 @@
     mode: '0755'
     state: directory
 
-- name: Configure netns overlay config file
+- name: Configure netns overlay config files
   template:
     src: netns_overlay
     dest: "/etc/netns/{{ netns_item.name }}/{{ item.filename }}"
-  with_items: "{{ netns_item.files }}"
+  with_items: "{{ netns_item.files | default([]) }}"
 
-- name: Enable netns systemd unit
-  systemd:
-    name: "netns-{{ netns_item.type }}@{{ netns_item.name }}.service"
-    enabled: yes
-    masked: no
-  when: "'type' in netns_item"
+- name: Reset virtual interface count
+  set_fact: veth_count=0
+
+- name: Configure netns interfaces
+  include_tasks: configure-netns-interface.yml
+  with_items: "{{ netns_item.config }}"

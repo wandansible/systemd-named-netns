@@ -16,7 +16,7 @@
       - systemd-named-netns
     state: present
 
-- name: Configure netns
+- name: Configure network namespaces
   include_tasks: configure-netns.yml
   with_items: "{{ netns }}"
   loop_control:
