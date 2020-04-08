@@ -35,16 +35,6 @@ GATEWAY_V6={{ item.gateway_v6 }}
     {%- if item.ipaddr_outside is defined -%}
 IPADDR_OUTSIDE={{ item.ipaddr_outside }}
     {% endif %}
-
-    {%- if item.devname_inside is defined -%}
-DEVNAME_INSIDE={{ item.devname_inside | truncate(15, False, "", 0) }}
-    {% else %}
-DEVNAME_INSIDE=veth{{ veth_count }}
-    {% endif %}
-
-    {%- if item.devname_outside is defined -%}
-DEVNAME_OUTSIDE={{ item.devname_outside | truncate(15, False, "", 0) }}
-    {% else %}
-DEVNAME_OUTSIDE={{ ("veth" + veth_count + "-" + netns_item.name) | truncate(15, False, "", 0) }}
-    {% endif %}
+DEVNAME_INSIDE={{ item.devname_inside | default(gen_devname_inside) }}
+DEVNAME_OUTSIDE={{ item.devname_outside | default(gen_devname_outside) }}
 {% endif %}

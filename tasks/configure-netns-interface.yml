@@ -1,5 +1,31 @@
 ---
 
+- name: Generate internal interface name if required
+  set_fact:
+    gen_devname_inside: veth{{ veth_count }}
+  when: "item.type != 'raw' and item.devname_inside is not defined"
+
+- name: Generate external interface name if required
+  set_fact:
+    gen_devname_outside: "{{ 'veth' + veth_count + '-' + netns_item.name }}"
+  when: "item.type != 'raw' and item.devname_outside is not defined"
+
+- name: Check internal interface name is a valid length
+  assert:
+    that:
+      - item.devname_inside | default(gen_devname_inside) | length >= 1
+      - item.devname_inside | default(gen_devname_inside) | length <= 15
+    fail_msg: "interface name '{{ item.devname_inside | default(gen_devname_inside) }}'"
+  when: "item.type != 'raw'"
+
+- name: Check external interface name is a valid length
+  assert:
+    that:
+      - item.devname_outside | default(gen_devname_outside) | length >= 1
+      - item.devname_outside | default(gen_devname_outside) | length <= 15
+    fail_msg: "interface name '{{ item.devname_outside | default(gen_devname_outside) }}'"
+  when: "item.type != 'raw'"
+
 - name: Configure netns interface
   template:
     src: netns_default
