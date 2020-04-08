@@ -1,2 +1,57 @@
 ---
 netns: []
+
+# Options here translate almost directly to systemd-named-netns options.
+#
+# Example configuration with 3 namespaces:
+#
+#netns:
+#  # a network namespace called netns1, with 3 different interfaces
+#  - name: netns1
+#    config:
+#      # the interface eth1 will be moved from the default namespace, have
+#      # the mac address set, and be configured using DHCP
+#      - type: raw
+#        interface: eth1
+#        macaddr: 00:11:22:33:44:55
+#        dhcpv4: 1
+#      # the interface eth2 will be moved from the default namespace, with
+#      # the network configuration explicitly set
+#      - type: raw
+#        interface: eth2
+#        ipaddr_v4: 192.0.2.2/24
+#        gateway_v4: 192.0.2.254/24
+#        ipaddr_v6: 2001:db8::2/64
+#        gateway_v6: 2001:db8::1/64
+#      # create a pair of virtual interfaces, with one (named by default as
+#      # veth0-netns1) in the default namespace attached to bridge interface
+#      # br0, and one (named by default veth0) in the netns1 namespace. If
+#      # more virtual interfaces are required then the numbers in the names
+#      # will increment as required.
+#      - type: bridge
+#        interface: br0
+#        ipaddr_v4: 198.51.100.2/24
+#        gateway_v4: 198.51.100.254/24
+#        ipaddr_v6: 2001:db8:1:1::2/64
+#        gateway_v6: 2001:db8:1:1::1/64
+#        ipaddr_outside: 198.51.100.3/24
+#    files:
+#      - filename: resolv.conf
+#        contents: |
+#          nameserver 2001:db8::dead
+#          nameserver 2001:db8::beef
+#
+#  # the automatically generated interface names that include the netns name
+#  # will be too long in this case, so set them to shorter names
+#  - name: netns2.with.a.long.name
+#    config:
+#      - type: bridge
+#        interface: br0
+#        devname_inside: veth0
+#        devname_outside: veth-netns2
+#
+#  # no options are needed for a virtual interface pair, though of course they
+#  # could be provided to set addresses etc if desired
+#  - name: netns3
+#    config:
+#      - type: veth
