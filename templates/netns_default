@@ -1,5 +1,40 @@
+#jinja2: trim_blocks: "true", lstrip_blocks: "true"
 # {{ ansible_managed }}
 
-{% for line in netns_item.config %}
-{{ line }}
-{% endfor %}
+{% if item.type == "bridge" %}
+BRIDGE={{ item.interface }}
+{% elif item.type == "raw" %}
+DEVNAME={{ item.interface }}
+{% endif %}
+
+{%- if item.macaddr is defined -%}
+MACADDR={{ item.macaddr }}
+{% endif %}
+
+{%- if item.dhcpv4 is defined -%}
+DHCPV4={{ item.dhcpv4 }}
+{% else %}
+    {%- if item.ipaddr_v4 is defined -%}
+IPADDR_V4={{ item.ipaddr_v4 }}
+    {% endif %}
+
+    {%- if item.gateway_v4 is defined -%}
+GATEWAY_V4={{ item.gateway_v4 }}
+    {% endif %}
+
+    {%- if item.ipaddr_v6 is defined -%}
+IPADDR_V6={{ item.ipaddr_v6 }}
+    {% endif %}
+
+    {%- if item.gateway_v6 is defined -%}
+GATEWAY_V6={{ item.gateway_v6 }}
+    {% endif %}
+{% endif %}
+
+{%- if item.type != "raw" -%}
+    {%- if item.ipaddr_outside is defined -%}
+IPADDR_OUTSIDE={{ item.ipaddr_outside }}
+    {% endif %}
+DEVNAME_INSIDE={{ item.devname_inside | default(gen_devname_inside) }}
+DEVNAME_OUTSIDE={{ item.devname_outside | default(gen_devname_outside) }}
+{% endif %}
