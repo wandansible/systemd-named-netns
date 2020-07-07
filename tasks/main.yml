@@ -2,6 +2,7 @@
 
 - name: Import WAND packaging GPG signing key
   apt_key:
+    id: "{{ wand_apt_key_fingerprint }}"
     url: "https://bintray.com/user/downloadSubjectPublicKey?username=wand"
     state: present
 

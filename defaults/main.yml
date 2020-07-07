@@ -1,4 +1,6 @@
 ---
+wand_apt_key_fingerprint: "54B22D514CCD2F1060E195AD69A507877C4B94E8"
+
 netns: []
 
 # Options here translate almost directly to systemd-named-netns options.
