@@ -19,6 +19,6 @@
 
 - name: Configure network namespaces
   include_tasks: configure-netns.yml
-  with_items: "{{ netns }}"
+  loop: "{{ netns }}"
   loop_control:
     loop_var: netns_item

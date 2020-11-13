@@ -20,11 +20,11 @@
   template:
     src: netns_overlay
     dest: "/etc/netns/{{ netns_item.name }}/{{ item.filename }}"
-  with_items: "{{ netns_item.files | default([]) }}"
+  loop: "{{ netns_item.files | default([]) }}"
 
 - name: Reset virtual interface count
   set_fact: veth_count=0
 
 - name: Configure netns interfaces
   include_tasks: configure-netns-interface.yml
-  with_items: "{{ netns_item.config }}"
+  loop: "{{ netns_item.config }}"
