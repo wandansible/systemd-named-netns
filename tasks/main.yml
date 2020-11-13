@@ -22,3 +22,4 @@
   loop: "{{ netns }}"
   loop_control:
     loop_var: netns_item
+    label: "{{ netns_item.name }}"
