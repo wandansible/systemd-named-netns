@@ -39,5 +39,6 @@
 
 # increment counter so next interface in this namespace gets a unique name
 - name: Increment virtual interface count
-  set_fact: veth_count={{ veth_count | int + 1 }}
+  set_fact:
+    veth_count: "{{ veth_count | int + 1 }}"
   when: "item.type == 'bridge' or item.type == 'veth'"

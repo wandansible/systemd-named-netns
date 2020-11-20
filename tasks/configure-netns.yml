@@ -25,10 +25,12 @@
     label: "{{ item.filename }}"
 
 - name: Reset virtual interface count
-  set_fact: veth_count=0
+  set_fact:
+    veth_count: 0
 
 - name: Configure netns interfaces
-  include_tasks: configure-netns-interface.yml
+  include_tasks:
+    file: configure-netns-interface.yml
   loop: "{{ netns_item.config }}"
   loop_control:
     label: "{{ item.interface | default(item.type) }}"

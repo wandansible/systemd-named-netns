@@ -18,7 +18,8 @@
     state: present
 
 - name: Configure network namespaces
-  include_tasks: configure-netns.yml
+  include_tasks:
+    file: configure-netns.yml
   loop: "{{ netns }}"
   loop_control:
     loop_var: netns_item
