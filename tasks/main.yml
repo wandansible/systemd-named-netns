@@ -1,14 +1,24 @@
 ---
 
-- name: Import WAND packaging GPG signing key
+- name: Remove WAND apt repository
+  apt_repository:
+    repo: "deb https://dl.bintray.com/wand/general {{ ansible_distribution_release }} main"
+    state: absent
+
+- name: Remove WAND packaging GPG signing key
   apt_key:
     id: "{{ wand_apt_key_fingerprint }}"
-    url: "https://bintray.com/user/downloadSubjectPublicKey?username=wand"
+    state: absent
+
+- name: Import systemd-named-netns packaging GPG signing key
+  apt_key:
+    id: "{{ netns_apt_key_fingerprint }}"
+    url: "https://dl.cloudsmith.io/public/wand/systemd-named-netns/gpg.51EA9C5A1A20279F.key"
     state: present
 
-- name: Add WAND apt repository
+- name: Add systemd-named-netns apt repository
   apt_repository:
-    repo: "deb https://dl.bintray.com/wand/general {{ansible_distribution_release}} main"
+    repo: "deb https://dl.cloudsmith.io/public/wand/systemd-named-netns/deb/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} main"
     state: present
 
 - name: Install systemd-named-netns
