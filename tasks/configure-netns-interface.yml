@@ -3,12 +3,16 @@
 - name: Generate internal interface name if required
   set_fact:
     gen_devname_inside: veth{{ veth_count }}
-  when: "item.type != 'raw' and item.devname_inside is not defined"
+  when:
+   - item.type != 'raw'
+   - item.devname_inside is not defined
 
 - name: Generate external interface name if required
   set_fact:
     gen_devname_outside: "{{ 'veth' + veth_count + '-' + netns_item.name }}"
-  when: "item.type != 'raw' and item.devname_outside is not defined"
+  when:
+    - item.type != 'raw'
+    - item.devname_outside is not defined
 
 - name: Check internal interface name is a valid length
   assert:
