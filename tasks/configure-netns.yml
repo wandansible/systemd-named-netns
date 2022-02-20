@@ -1,7 +1,7 @@
 ---
 
 - name: Create netns interface config directory
-  file:
+  ansible.builtin.file:
     path: "/etc/default/netns-{{ netns_item.name }}/"
     owner: root
     group: root
@@ -9,7 +9,7 @@
     state: directory
 
 - name: Create netns overlay config directory
-  file:
+  ansible.builtin.file:
     path: "/etc/netns/{{ netns_item.name }}/"
     owner: root
     group: root
@@ -17,19 +17,22 @@
     state: directory
 
 - name: Configure netns overlay config files
-  template:
+  ansible.builtin.template:
     src: netns_overlay
     dest: "/etc/netns/{{ netns_item.name }}/{{ item.filename }}"
+    owner: root
+    group: root
+    mode: u=rw,g=r,o=r
   loop: "{{ netns_item.files | default([]) }}"
   loop_control:
     label: "{{ item.filename }}"
 
 - name: Reset virtual interface count
-  set_fact:
+  ansible.builtin.set_fact:
     veth_count: 0
 
 - name: Configure netns interfaces
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: configure-netns-interface.yml
   loop: "{{ netns_item.config }}"
   loop_control:

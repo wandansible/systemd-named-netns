@@ -1,21 +1,21 @@
 ---
 
 - name: Generate internal interface name if required
-  set_fact:
+  ansible.builtin.set_fact:
     gen_devname_inside: veth{{ veth_count }}
   when:
-   - item.type != 'raw'
-   - item.devname_inside is not defined
+    - item.type != 'raw'
+    - item.devname_inside is not defined
 
 - name: Generate external interface name if required
-  set_fact:
+  ansible.builtin.set_fact:
     gen_devname_outside: "{{ 'veth' + veth_count + '-' + netns_item.name }}"
   when:
     - item.type != 'raw'
     - item.devname_outside is not defined
 
 - name: Check internal interface name is a valid length
-  assert:
+  ansible.builtin.assert:
     that:
       - item.devname_inside | default(gen_devname_inside) | length >= 1
       - item.devname_inside | default(gen_devname_inside) | length <= 15
@@ -23,7 +23,7 @@
   when: "item.type != 'raw'"
 
 - name: Check external interface name is a valid length
-  assert:
+  ansible.builtin.assert:
     that:
       - item.devname_outside | default(gen_devname_outside) | length >= 1
       - item.devname_outside | default(gen_devname_outside) | length <= 15
@@ -31,18 +31,21 @@
   when: "item.type != 'raw'"
 
 - name: Configure netns interface
-  template:
+  ansible.builtin.template:
     src: netns_default
     dest: "/etc/default/netns-{{ netns_item.name }}/{{ item.type }}.{{ item.interface | default(veth_count) }}"
+    owner: root
+    group: root
+    mode: u=rw,g=r,o=r
 
 - name: Enable netns systemd unit
-  systemd:
+  ansible.builtin.systemd:
     name: "netns-{{ item.type }}@{{ netns_item.name }}.service"
     enabled: yes
     masked: no
 
 # increment counter so next interface in this namespace gets a unique name
 - name: Increment virtual interface count
-  set_fact:
+  ansible.builtin.set_fact:
     veth_count: "{{ veth_count | int + 1 }}"
   when: "item.type == 'bridge' or item.type == 'veth'"

@@ -1,34 +1,50 @@
 ---
 
 - name: Remove WAND apt repository
-  apt_repository:
+  ansible.builtin.apt_repository:
     repo: "deb https://dl.bintray.com/wand/general {{ ansible_distribution_release }} main"
     state: absent
 
 - name: Remove WAND packaging GPG signing key
-  apt_key:
+  ansible.builtin.apt_key:
     id: "{{ wand_apt_key_fingerprint }}"
     state: absent
 
+- name: Remove old systemd-named-netns apt repository entry
+  ansible.builtin.apt_repository:
+    repo: deb https://dl.cloudsmith.io/public/wand/systemd-named-netns/deb/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} main
+    update_cache: no
+    state: absent
+
+- name: Remove systemd-named-netns apt signing key from default apt keyring
+  ansible.builtin.apt_key:
+    id: "{{ netns_apt_key_fingerprint }}"
+    keyring: /etc/apt/trusted.gpg
+    state: absent
+
 - name: Import systemd-named-netns packaging GPG signing key
-  apt_key:
+  ansible.builtin.apt_key:
     id: "{{ netns_apt_key_fingerprint }}"
     url: "https://dl.cloudsmith.io/public/wand/systemd-named-netns/gpg.51EA9C5A1A20279F.key"
+    keyring: /usr/share/keyrings/systemd-named-netns.gpg
     state: present
 
 - name: Add systemd-named-netns apt repository
-  apt_repository:
-    repo: "deb https://dl.cloudsmith.io/public/wand/systemd-named-netns/deb/{{ ansible_distribution | lower }} {{ ansible_distribution_release }} main"
+  ansible.builtin.apt_repository:
+    repo: >-
+      deb [signed-by=/usr/share/keyrings/systemd-named-netns.gpg]
+      https://dl.cloudsmith.io/public/wand/systemd-named-netns/deb/{{ ansible_distribution | lower }}
+      {{ ansible_distribution_release }} main
     state: present
 
 - name: Install systemd-named-netns
-  apt:
+  ansible.builtin.apt:
     pkg:
       - systemd-named-netns
     state: present
 
 - name: Configure network namespaces
-  include_tasks:
+  ansible.builtin.include_tasks:
     file: configure-netns.yml
   loop: "{{ netns }}"
   loop_control:
