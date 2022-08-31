@@ -10,7 +10,7 @@
     id: "{{ wand_apt_key_fingerprint }}"
     state: absent
 
-- name: Remove old systemd-named-netns apt repository entry
+- name: Remove old systemd-named-netns apt sources.list file
   ansible.builtin.file:
     path: /etc/apt/sources.list.d/dl_cloudsmith_io_public_wand_systemd_named_netns_deb_{{ ansible_distribution | lower }}.list
     state: absent
@@ -21,17 +21,40 @@
     keyring: /etc/apt/trusted.gpg
     state: absent
 
+- name: Remove old systemd-named-netns apt repository entry
+  ansible.builtin.apt_repository:
+    repo: >-
+      deb [signed-by=/usr/share/keyrings/systemd-named-netns.gpg]
+      https://dl.cloudsmith.io/public/wand/systemd-named-netns/deb/{{ ansible_distribution | lower }}
+      {{ ansible_distribution_release }} main
+    filename: systemd-named-netns
+    update_cache: no
+    state: absent
+
+- name: Remove systemd-named-netns apt signing key from /usr/share/keyrings
+  ansible.builtin.file:
+    path: /usr/share/keyrings/systemd-named-netns.gpg
+    state: absent
+
+- name: Create apt keyrings directory
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    owner: root
+    group: root
+    mode: u=rwx,g=rx,o=rx
+
 - name: Import systemd-named-netns packaging GPG signing key
   ansible.builtin.apt_key:
     id: "{{ netns_apt_key_fingerprint }}"
     url: "https://dl.cloudsmith.io/public/wand/systemd-named-netns/gpg.51EA9C5A1A20279F.key"
-    keyring: /usr/share/keyrings/systemd-named-netns.gpg
+    keyring: /etc/apt/keyrings/systemd-named-netns.gpg
     state: present
 
 - name: Add systemd-named-netns apt repository
   ansible.builtin.apt_repository:
     repo: >-
-      deb [signed-by=/usr/share/keyrings/systemd-named-netns.gpg]
+      deb [signed-by=/etc/apt/keyrings/systemd-named-netns.gpg]
       https://dl.cloudsmith.io/public/wand/systemd-named-netns/deb/{{ ansible_distribution | lower }}
       {{ ansible_distribution_release }} main
     filename: systemd-named-netns
