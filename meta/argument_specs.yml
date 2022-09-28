@@ -1,0 +1,86 @@
+---
+argument_specs:
+  main:
+    short_description: Install and configure systemd-named-netns
+    description: |
+      systemd-named-netns enables you to manage network namespaces as systemd services.
+      This includes naming the network namespace as well as configuring the network settings for the namespace.
+      These named network namespaces can be attached to existing systemd services to have them run inside the network namespace.
+      For more details, see: https://github.com/wanduow/systemd-named-netns/
+    options:
+      netns:
+        description: List of network namespaces and their configuration
+        type: list
+        elements: dict
+        options:
+          name:
+            description: Name for the namespace
+            type: str
+            required: true
+          config:
+            description: List of interfaces to attach to the namespace and their configuration
+            type: list
+            elements: dict
+            required: true
+            options:
+              type:
+                description: Interface type
+                type: str
+                required: true
+                choices:
+                  - bridge
+                  - raw
+                  - veth
+              interface:
+                description: |
+                  Name of the interface or bridge to attach to the network namespace,
+                  required if type = bridge or raw
+                type: str
+              macaddr:
+                description: MAC address for the interface
+                type: str
+              dhcpv4:
+                description: If set to 1, use DHCPv4 for assigning an IPv4 address and gateway
+                type: int
+              ipaddr_v4:
+                description: Static IPv4 address for the interface
+                type: str
+              gateway_v4:
+                description: Default IPv4 gateway
+                type: str
+              ipaddr_v6:
+                description: Static IPv6 address for the interface
+                type: str
+              gateway_v6:
+                description: Default IPv6 gateway
+                type: str
+              ipaddr_outside:
+                description: Static IPv4 address for the interface outside the ns
+                type: str
+              devname_inside:
+                description: Name of the interface inside the ns
+                type: str
+              devname_outside:
+                description: Name of the interface outside the ns
+                type: str
+          files:
+            description: List of configuration files and their contents to add to the namespace's /etc/ directory
+            type: list
+            elements: dict
+            options:
+              filename:
+                description: Filename (excluding /etc/)
+                type: str
+                required: true
+              contents:
+                description: Contents for the file
+                type: str
+                required: true
+
+      wand_apt_key_fingerprint:
+        description: Fingerprint for apt signing key for old WAND bintray repo
+        type: str
+
+      netns_apt_key_fingerprint:
+        description: Fingerprint for apt signing key
+        type: str
