@@ -1,0 +1,8 @@
+---
+- name: Prepare
+  hosts: all
+  tasks:
+    - name: "Add virtual network interface"
+      ansible.builtin.command: "ip tuntap add eno2 mode tap"
+      args:
+        creates: "/sys/class/net/eno2"

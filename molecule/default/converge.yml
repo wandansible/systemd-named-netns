@@ -1,0 +1,20 @@
+---
+- name: Converge
+  hosts: all
+  tasks:
+    - name: "Include wandansible.systemd_named_netns"
+      ansible.builtin.include_role:
+        name: "wandansible.systemd_named_netns"
+      vars:
+        netns:
+          - name: ipv6-only
+            config:
+              - type: raw
+                interface: eno2
+                ipaddr_v6: "2001:db8::1/64"
+                gateway_v6: "2001:db8::ffff"
+            files:
+              - filename: resolv.conf
+                contents: |
+                  nameserver 2001:4860:4860::8888
+                  nameserver 2001:4860:4860::8844
