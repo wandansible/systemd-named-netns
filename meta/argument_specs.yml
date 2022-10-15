@@ -6,7 +6,7 @@ argument_specs:
       systemd-named-netns enables you to manage network namespaces as systemd services.
       This includes naming the network namespace as well as configuring the network settings for the namespace.
       These named network namespaces can be attached to existing systemd services to have them run inside the network namespace.
-      For more details, see: https://github.com/wanduow/systemd-named-netns/
+      For more details, see: https://github.com/wandnz/systemd-named-netns/
     options:
       netns:
         description: List of network namespaces and their configuration
