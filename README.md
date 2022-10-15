@@ -8,7 +8,7 @@ namespace as well as configuring the network settings for the
 namespace. These named network namespaces can be attached to
 existing systemd services to have them run inside the network
 namespace. For more details, see:
-https://github.com/wanduow/systemd-named-netns/
+https://github.com/wandnz/systemd-named-netns/
 
 Role Variables
 --------------
@@ -22,7 +22,7 @@ ENTRY POINT: main - Install and configure systemd-named-netns
         namespace. These named network namespaces can be attached to
         existing systemd services to have them run inside the network
         namespace. For more details, see:
-        https://github.com/wanduow/systemd-named-netns/
+        https://github.com/wandnz/systemd-named-netns/
 
 OPTIONS (= is mandatory):
 
